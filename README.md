@@ -1,7 +1,7 @@
 # Selenium + Pytest Automation Portfolio
 
-[![CI](https://github.com/YOUR-USERNAME/qa-auto-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/qa-auto-portfolio/actions/workflows/ci.yml)
-[![Allure Report](https://img.shields.io/badge/Allure-Report-blue)](https://YOUR-USERNAME.github.io/qa-auto-portfolio)
+[![CI](https://github.com/L-Dub/qa-auto-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/L-Dub/qa-auto-portfolio/actions/workflows/ci.yml)
+[![Allure Report](https://img.shields.io/badge/Allure-Report-blue)](https://L-Dub.github.io/qa-auto-portfolio)
 
 A Test automation framework for a blast control system, based on a comprehensive manual test plan. Built with **Selenium**, **Pytest**, and **Allure**, this framework demonstrates best practices in test automation including Page Object Model, data-driven testing, parallel execution, CI/CD integration, and hardware test isolation.
 
