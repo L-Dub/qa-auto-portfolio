@@ -13,6 +13,7 @@ htmlconv/
 venv
 env/
 ENV/
+.env.backup
 
 # IDE
 .vscode/
