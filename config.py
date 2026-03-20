@@ -14,7 +14,7 @@ class Config:
     """Central configuration class."""
 
     # Application URL
-    BASE_URL = os.getenv("BASE_URL")
+    BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
 
     # Browser settings
     BROWSER = os.getenv("BROWSER")
@@ -30,6 +30,9 @@ class Config:
     ENGINEER_PASSWORD= os.getenv("ENGINEER_PASSWORD")
     SUPERVISOR_USERNAME= os.getenv("SUPERVISOR_USERNAME")
     SUPERVISOR_PASSWORD= os.getenv("SUPERVISOR_PASSWORD")
+    
+    #Firmware file path
+    FIRMWARE_FILE_PATH = os.getenv("FIRMWARE_FILE_PATH")
 
     # API
     API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080/api")

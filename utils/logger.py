@@ -7,6 +7,7 @@ import logging
 import os
 from config import Config
 
+
 # Create logs directory if it doesn't exist
 os.makedirs(Config.LOG_DIR, exist_ok=True)
 
@@ -22,4 +23,3 @@ logging.basicConfig(
 
 # Create a logger instance for the whole framework
 logger = logging.getLogger(__name__)
-

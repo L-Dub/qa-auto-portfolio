@@ -18,12 +18,12 @@ A Test automation framework for a blast control system, based on a comprehensive
 - **GitHub Actions** CI pipeline with matrix testing, caching, and scheduled runs.
 
 # Project Structure
-|--.github/workflows/ci.yml # CI pipelin
+|--.github/workflows/ci.yml # CI pipeline
 |--pages/ # Page Objects
 |--tests/ # All test files
 |--utils/ # Helpers (logger, screenshot)
 |--config.py # Configuration from environment
-|--.env.example # Templete for evironment variables
+|--.env.example # Template for environment variables
 |--requirements.txt
 |--Dockerfile
 |--docker-compose.yml
