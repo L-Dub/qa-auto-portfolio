@@ -9,7 +9,7 @@ __pycache__/
 htmlconv/
 
 # Environment
-.evn
+.env
 venv
 env/
 ENV/
