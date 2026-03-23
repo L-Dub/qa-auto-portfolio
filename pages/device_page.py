@@ -46,6 +46,7 @@ class DevicePage(BasePage):
     FIRMWARE_FILE_INPUT = (By.ID, "firmware-file")
     DEVICE_TYPE_SELECT_FW = (By.XPATH, "//span[text()='Device Type']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")                  # Different from above? Keep separate
     UPLOAD_SUBMIT = (By.XPATH, "//button[contains(., 'Upload Firmware')]")
+    DEVICE_TYPE_TO_USE = (By.XPATH, "//mat-option[normalize-space()='BCU']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -145,10 +146,11 @@ class DevicePage(BasePage):
         Upload a firmware file for a specific device type.
         Steps: click upload, select file, choose type, upload.
         """
-        logger.info(f"Uploading firmware '{file_path}' for device type '{device_type}'")
+        logger.info("Uploading firmware for device")
         self.click(self.FIRMWARE_UPLOAD_BUTTON)
         self.type(self.FIRMWARE_FILE_INPUT, Config.FIRMWARE_FILE_PATH)
         self.select_dropdown_option(self.DEVICE_TYPE_SELECT_FW, device_type)
+        self.click(self.DEVICE_TYPE_TO_USE)
         self.click(self.UPLOAD_SUBMIT)
         # Optionally wait for success message
         logger.info("Firmware upload initiated")

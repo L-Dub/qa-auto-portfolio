@@ -23,6 +23,7 @@ class LoginPage(BasePage):
     FLASH_MESSAGE = (By.CSS_SELECTOR, "[matsnackbarlabrl]")          # Area that shows success/error messages
     LOGOUT_BUTTON = (By.XPATH, "//span[text()='Logout']")
     EYE_ICON = (By.ID, "togglePassword")  # Adjust selector to match your app's HTML
+    SETTINGS_BUTTON = (By.XPATH, "//button[contains(text(), 'Settings')]")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -33,6 +34,9 @@ class LoginPage(BasePage):
         """Open the login page and verify we are on the correct page."""
         self.open(self.url)
         assert "/en/login" in self.driver.current_url  # Quick sanity check
+        
+    def open_settings(self):
+        self.click(self.SETTINGS_BUTTON)
 
     # ---------- Actions ----------
     def login(self):
@@ -40,13 +44,13 @@ class LoginPage(BasePage):
         Fill in credentials and click the login button.
         Does not assert success – that's left to the test.
         """
-        logger.info(f"Attempting login with username: {Config.ENGINEER_USERNAME}")
-        self.type(self.USERNAME_INPUT, Config.ENGINEER_USERNAME)
-        self.type(self.PASSWORD_INPUT, Config.ENGINEER_PASSWORD)
+        logger.info(f"Attempting login with username: {Config.ADMIN_USERNAME}")
+        self.type(self.USERNAME_INPUT, Config.ADMIN_USERNAME)
+        self.type(self.PASSWORD_INPUT, Config.ADMIN_PASSWORD)
         self.click(self.LOGIN_BUTTON)
 
     def logout(self):
-        """Click the logout link. Assumes the user is already logged in."""
+        """Click the logout button. Assumes the user is already logged in."""
         logger.info("Logging out")
         self.click(self.LOGOUT_BUTTON)
 

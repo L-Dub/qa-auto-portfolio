@@ -30,7 +30,8 @@ class UserPage(BasePage):
     FIRST_NAME_FIELD = (By.ID, "addUserFirstName")
     LAST_NAME_FIELD = (By.ID, "addUserSurname")
     EMAIL_FIELD = (By.ID, "addUserEmail")
-    ROLE_SELECT = (By.XPATH, "//div[contains(@class, 'mat-mdc-select') and .//span[text()='Role']]")
+    ROLE_DROPDOWN = (By.XPATH, "//div[contains(@class, 'mat-mdc-select') and .//span[text()='Role']]")
+    ROLE_SELECT = (By.XPATH, "//span[contains(text(), 'detnet engineer')]")  # Example role option; adjust as needed
     ADD_USER_BUTTON = (By.XPATH, "//span[contains(text(), 'Add User')]")
 
     def __init__(self, driver):
@@ -47,7 +48,19 @@ class UserPage(BasePage):
     def click_add_user(self):
         """Click the 'Add User' button."""
         self.click(self.ADD_USER_BUTTON)
-
+        
+    def reset_user_password(self, index=1):
+        """Click the reset password icon for the user at the given row index."""
+        icons = self.find_elements(self.RESET_PASSWORD_ICON)
+        assert len(icons) > index, f"No reset password icon at index {index}"
+        icons[index].click()
+        
+    def click_edit_user(self, index=1):
+        """Click the edit icon for the user at the given row index."""
+        icons = self.find_elements(self.EDIT_ICON)
+        assert len(icons) > index, f"No edit icon at index {index}"
+        icons[index].click()
+        
     def search_user(self, keyword):
         """Type a search keyword into the search bar."""
         self.type(self.SEARCH_BAR, keyword)
@@ -72,13 +85,14 @@ class UserPage(BasePage):
         self.click(self.DELETE_ICON)
         self.click(self.CONFIRM_DELETE)
 
-    def fill_user_form(self, username, first_name, last_name, email, role):
+    def fill_user_form(self, username, first_name, last_name, email):
         """Fill the add/edit user form (assumes form is already open)."""
         self.type(self.USERNAME_FIELD, username)
         self.type(self.FIRST_NAME_FIELD, first_name)
         self.type(self.LAST_NAME_FIELD, last_name)
         self.type(self.EMAIL_FIELD, email)
-        self.select_dropdown(self.ROLE_SELECT, role)  # Note: select_dropdown not yet defined in base, we'll add later
+        self.click(self.ROLE_DROPDOWN) # Click the role dropdown to open it
+        self.click(self.ROLE_SELECT)  # Select the role from dropdown
         self.click(self.ADD_USER_BUTTON)
 
     # ---------- Getters ----------

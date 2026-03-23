@@ -52,7 +52,7 @@ class BasePage:
         element = self.find_element(locator)
         element.clear()
         element.send_keys(text)
-
+        
     def get_text(self, locator):
         """Get text content of an element."""
         text = self.find_element(locator).text
