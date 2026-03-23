@@ -11,7 +11,7 @@ class TestReports:
         reports.navigate_to_events()
         assert "events" in driver.current_url
 
-    def test_generate_events_report():
+    def test_generate_events_report(self, driver):
         login_page = LoginPage(driver)
         login_page.navigate()
         login_page.login()
