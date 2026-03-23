@@ -33,7 +33,7 @@ class DevicePage(BasePage):
     MANAGER_SELECT = (By.XPATH, "//div[contains(@class, 'mat-mdc-select-value')]//span[text()='None']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")
 
     SAVE_BUTTON = (By.ID, "addDeviceSubmitButton")       # Save button (no ID, using text)
-    EDIT_ICON = (By.CSS_SELECTOR, "[mattooltip='Edit this Device']")  # Based on tooltip text
+    EDIT_ICON = (By.CSS_SELECTOR, "[matooltip='Edit this Device']")  # Based on tooltip text
     DELETE_ICON = (By.CSS_SELECTOR, "[mattooltip='Delete this Device']")
     SEARCH_BAR = (By.CSS_SELECTOR, "input[placeholder='Search using ID, Location, IP']")
     DEVICE_TABLE = (By.CSS_SELECTOR, "table.mat-mdc-table")         # Table with class

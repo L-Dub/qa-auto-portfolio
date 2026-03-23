@@ -6,7 +6,7 @@ Handles device selection, arming, blasting, alerts, grouping, and event log.
 from selenium.webdriver.common.by import By
 from selenium.webdriver import driver
 from pages.base_page import BasePage
-
+from utils.logger import logger
 
 class DashboardPage(BasePage):
     """
@@ -117,27 +117,28 @@ class DashboardPage(BasePage):
         return self.find_elements((By.CSS_SELECTOR, ".alert-item"))
 
     # ---------- Channel Offset ----------
-    def set_channel_offsets(self, seconds_list):
+    def set_channel_offset(self, seconds_list):
+        """Set multiple channel offsets.
+    
+        Args:
+        seconds_list (list): List of integer/string values for each channel.
         """
-        Set channel offsets for all six channels.
-        :param milli_seconds_list: list of six integers/strings, e.g. [3000, 6000, 9000, 12000, 15000, 20000]
-        """
-        # Click the offset icon to open the panel
+        # Open the offset panel
         self.click(self.OFFSET_ICON)
-    
-        # Find all six offset input fields (order matches channels C1–C6)
-        inputs = self.driver.find_elements(*CHANNEL_OFFSET_INPUTS)
-    
-        # Ensure we have exactly six inputs
-        if len(inputs) != 6:
-            raise ValueError(f"Expected 6 offset inputs, found {len(inputs)}")
-    
-        # Set each input
+
+        # Find all offset input fields (assumes CHANNEL_OFFSET_INPUT locator points to each input)
+        inputs = self.driver.find_elements(*self.CHANNEL_OFFSET_INPUT)
+
+        # Validate count
+        if len(inputs) != len(seconds_list):
+            raise ValueError(f"Expected {len(seconds_list)} offset inputs, got {len(inputs)}")
+
+        # Set each value
         for i, value in enumerate(seconds_list):
             inputs[i].clear()
             inputs[i].send_keys(str(value))
-    
-        # Click save
+
+        # Save
         self.click(self.SAVE_BUTTON)
         
     # ---------- Grouping ----------
