@@ -5,7 +5,7 @@ Handles viewing, adding, editing, deleting, and searching users.
 
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
-from utils import logger
+from utils.logger import logger
 
 
 class UserPage(BasePage):
@@ -13,13 +13,20 @@ class UserPage(BasePage):
     Represents the user management section (Settings → Users).
     """
 
-    # Locators
+    # Navigation elements (UI path)
+    USER_MENU = (By.CSS_SELECTOR, ".userName-wrapper")                     # Opens user dropdown
+    SETTINGS_MENU_ITEM = (By.XPATH, "//span[text()='Settings']")           # Settings option inside dropdown
+    USERS_TAB = (By.XPATH, "//mat-button-toggle//span[text()='Users']")    # Users tab on settings page
+
+    # User table locators
+    USER_TABLE = (By.XPATH, "//table[@role='table']")                      # The main users table
+
+    # Other locators
     ADD_USER_BUTTON = (By.XPATH, "//span[contains(text(),'Add User')]")
     EDIT_ICON = (By.CSS_SELECTOR, "[mattooltip='Edit this user']")
     DELETE_ICON = (By.CSS_SELECTOR, "[mattooltip='Delete this user']")
     RESET_PASSWORD_ICON = (By.CSS_SELECTOR, "[mattooltip='Reset this user's password']")
     SEARCH_BAR = (By.CSS_SELECTOR, "input[placeholder='Search using Username, First Name, Surname']")
-    USER_TABLE = (By.CSS_SELECTOR, "//table[role='table']")
     CHECKBOX_HEADER = (By.CSS_SELECTOR, "th input[type='checkbox']")
     CHECKBOX_ROW = (By.CSS_SELECTOR, "td input[type='checkbox']")
     DELETE_USERS_BUTTON = (By.XPATH, "//span[contains(text(),'Delete Users')]")
@@ -32,35 +39,43 @@ class UserPage(BasePage):
     EMAIL_FIELD = (By.ID, "addUserEmail")
     ROLE_DROPDOWN = (By.XPATH, "//div[contains(@class, 'mat-mdc-select') and .//span[text()='Role']]")
     ROLE_SELECT = (By.XPATH, "//span[contains(text(), 'detnet engineer')]")  # Example role option; adjust as needed
-    ADD_USER_BUTTON = (By.XPATH, "//span[contains(text(), 'Add User')]")
 
     def __init__(self, driver):
         super().__init__(driver)
-        self.url = "/settings/users"
+        # No direct URL – navigation is done via UI
 
     # ---------- Navigation ----------
     def navigate(self):
-        """Go to the users page."""
-        self.open(self.url)
-        self.assert_element_displayed(self.USER_TABLE)  # Ensure page loaded
+        """
+        Navigate to the Users page via:
+        1. Click the user menu (userName-wrapper)
+        2. Click the Settings menu item
+        3. Click the Users tab
+        Assumes the user is already logged in and the dashboard is loaded.
+        """
+        logger.info("Navigating to Users page via user menu → Settings → Users")
+        self.click(self.USER_MENU)                # Open dropdown
+        self.click(self.SETTINGS_MENU_ITEM)       # Click Settings
+        self.click(self.USERS_TAB)                # Click Users tab
+        self.assert_element_displayed(self.USER_TABLE)   # Ensure page loaded
 
     # ---------- Actions ----------
     def click_add_user(self):
         """Click the 'Add User' button."""
         self.click(self.ADD_USER_BUTTON)
-        
+
     def reset_user_password(self, index=1):
         """Click the reset password icon for the user at the given row index."""
         icons = self.find_elements(self.RESET_PASSWORD_ICON)
         assert len(icons) > index, f"No reset password icon at index {index}"
         icons[index].click()
-        
+
     def click_edit_user(self, index=1):
         """Click the edit icon for the user at the given row index."""
         icons = self.find_elements(self.EDIT_ICON)
         assert len(icons) > index, f"No edit icon at index {index}"
         icons[index].click()
-        
+
     def search_user(self, keyword):
         """Type a search keyword into the search bar."""
         self.type(self.SEARCH_BAR, keyword)
@@ -113,7 +128,6 @@ class UserPage(BasePage):
         """Assert that a user with the given username appears in the table."""
         self.search_user(username)
         rows = self.get_user_rows()
-        # After search, there should be at least one row containing the username
         found = any(username in row.text for row in rows)
         assert found, f"User '{username}' not found in user list"
         logger.info(f"User '{username}' found in list")
@@ -122,7 +136,6 @@ class UserPage(BasePage):
         """Assert that a user with the given username does NOT appear after search."""
         self.search_user(username)
         rows = self.get_user_rows()
-        # Either table is empty or none of the rows contain the username
         found = any(username in row.text for row in rows)
         assert not found, f"User '{username}' should not be in list but was found"
         logger.info(f"User '{username}' correctly absent from list")
