@@ -18,7 +18,7 @@ class Config:
 
     # Browser settings
     BROWSER = os.getenv("BROWSER")
-    HEADLESS = os.getenv("HEADLESS").lower() == "true"
+    HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
     IMPLICIT_WAIT = int(os.getenv("IMPLICIT_WAIT", "30"))
 
     # Credentials
@@ -42,4 +42,4 @@ class Config:
     LOG_DIR = "logs"
 
     # Hardware mock flag
-    MOCK_HARDWARE = os.getenv("MOCK_HARDWARE").lower() == "true"
+    MOCK_HARDWARE = os.getenv("MOCK_HARDWARE", "false").lower() == "true"

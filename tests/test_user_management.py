@@ -2,6 +2,7 @@ import pytest
 from pages.user_page import UserPage
 from pages.login_page import LoginPage
 from tests.conftest import driver
+from config import Config
 
 
 class TestUserManagement:
@@ -21,10 +22,10 @@ class TestUserManagement:
         user_page = UserPage(driver)
         user_page.navigate()
         user_page.click_add_user()
-        user_page.fill_user_form()
+        user_page.fill_user_form("Tester1", "Tested", "Tester_surname", "tester@example.com")
         assert "add-user" in driver.current_url  # adjust
         
-    def test_change_user_password(self, new_password="NewPass123!"):
+    def test_change_user_password(self, driver, new_password="NewPass123!"):
         # Implementation would depend on the actual UI flow for changing password.
         login_page = LoginPage(driver)
         login_page.navigate()

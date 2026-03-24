@@ -1,8 +1,3 @@
-"""
-Base page class that all page objects inherit from.
-Provides common methods for interacting with elements and making assertions.
-"""
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -46,13 +41,20 @@ class BasePage:
         element = self.wait.until(EC.element_to_be_clickable(locator))
         element.click()
 
-    def type(self, locator, text):
-        """Clear an input field and type text."""
+    def type(self, locator, text, clear_first=True):
+        """
+        Type text into an element. Waits for visibility before interacting.
+        If clearing fails (e.g., disabled/readonly), falls back to JavaScript.
+        """
         logger.debug(f"Typing '{text}' into element: {locator}")
-        element = self.find_element(locator)
-        element.clear()
+        element = self.wait.until(EC.visibility_of_element_located(locator))
+        if clear_first:
+            try:
+                element.clear()
+            except Exception:
+                self.driver.execute_script("arguments[0].value = '';", element)
         element.send_keys(text)
-        
+
     def get_text(self, locator):
         """Get text content of an element."""
         text = self.find_element(locator).text
