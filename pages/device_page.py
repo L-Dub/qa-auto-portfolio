@@ -144,16 +144,14 @@ class DevicePage(BasePage):
             EC.presence_of_element_located(file_input_locator)
         )
         file_input.send_keys(file_path)   # Send the absolute path to the file
-        time.sleep(1)  # Small wait to ensure file is processed by the UI
+
         # Step 3: Select device type (if needed after file selection)
         self.click(self.DEVICE_TYPE_SELECT)
-        time.sleep(1)  # Small wait to ensure dropdown options are loaded
+
         self.click(self.DEVICE_TYPE_TO_USE)  # Click the option matching device_type
 
         time.sleep(1)  # Small wait to ensure UI updates before submitting
 
-        # Step 4: Submit the upload
-        self.click(self.UPLOAD_SUBMIT)
         time.sleep(1)  # Wait for upload to process (adjust as needed)
         # Optionally wait for success message
         logger.info(f"Firmware upload initiated for {device_type} from {os.path.basename(file_path)}")

@@ -5,7 +5,7 @@ Handles CRUD operations on networks.
 
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
-from utils import logger
+from utils.logger import logger
 
 
 class NetworkPage(BasePage):
@@ -27,6 +27,7 @@ class NetworkPage(BasePage):
     DELETE_NETWORKS_BUTTON = (By.XPATH, "//span[contains(text(), 'Delete Networks')]")
     CONFIRM_DELETE = (By.CSS_SELECTOR, "button.yesBtn")
 
+#----------------------- Actions ----------------------
     def __init__(self, driver):
         super().__init__(driver)
         self.url = "/settings/networks"
@@ -43,9 +44,9 @@ class NetworkPage(BasePage):
         """
         self.click(self.ADD_NETWORK_BUTTON)
         self.type(self.NETWORK_NAME, name)
-        if report_detonators:
-            self.click(self.REPORT_DETONATORS_CHECK)
-        if in_use:
+        
+        self.click(self.REPORT_DETONATORS_CHECK)
+        if not in_use:
             self.click(self.IN_USE_CHECK)
         self.click(self.SAVE_BUTTON)
         # Wait for the network to appear in the table (implicitly via search)
