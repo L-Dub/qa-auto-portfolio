@@ -1,24 +1,19 @@
-"""
-Page Object for Device Management.
-Handles adding, editing, deleting, and searching devices.
-Includes firmware upload functionality.
-"""
-
-import logging
+from pytest import Config
 from selenium.webdriver.common.by import By
+import time
+from pages.base_page import BasePage
+from utils.logger import logger
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from pages.base_page import BasePage
-from config import Config
-
-logger = logging.getLogger(__name__)
-
+from selenium.common.exceptions import TimeoutException
+import os
 
 class DevicePage(BasePage):
     """
     Represents the devices management page (Settings → Devices).
     Also includes firmware upload functionality.
     """
+
 
     # ----- Device CRUD locators -----
     ADD_DEVICE_BUTTON = (By.CSS_SELECTOR, "button.addBtn")          # Click to open add form
@@ -28,8 +23,11 @@ class DevicePage(BasePage):
 
     # Dropdowns (Angular Material) – each locator targets the trigger <div>
     NETWORK_SELECT = (By.XPATH, "//span[text()='Network']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")
+    NETWORK_TYPE_OPTION = (By.XPATH, "//span[contains(text(), 'ETHERNET')]")
     NETWORK_INTERFACE_SELECT = (By.XPATH, "//span[text()='Network Interface']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")
+    NETWORK_INTERFACE_OPTION = (By.XPATH, "//span[contains(text(), 'Ethernet')]")
     DEVICE_TYPE_SELECT = (By.XPATH, "//span[text()='Device Type']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")
+    DEVICE_TYPE_OPTION = (By.XPATH, "//span[contains(text(), 'BCU')]")
     MANAGER_SELECT = (By.XPATH, "//div[contains(@class, 'mat-mdc-select-value')]//span[text()='None']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")
 
     SAVE_BUTTON = (By.ID, "addDeviceSubmitButton")       # Save button (no ID, using text)
@@ -43,8 +41,8 @@ class DevicePage(BasePage):
 
     # ----- Firmware upload locators -----
     FIRMWARE_UPLOAD_BUTTON = (By.XPATH, "//span[text()='Upload Firmware']")
-    FIRMWARE_FILE_INPUT = (By.ID, "firmware-file")
-    DEVICE_TYPE_SELECT_FW = (By.XPATH, "//span[text()='Device Type']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]")                  # Different from above? Keep separate
+    SELECT_FILE_BTN = (By.XPATH, "//span[contains(text(), 'Select File')]")
+    DEVICE_TYPE_SELECT_FW = (By.XPATH, "//span[text()='Device Type']/ancestor::div[contains(@class, 'mat-mdc-select-trigger')]") #This select the device type dropdown                 # Different from above? Keep separate
     UPLOAD_SUBMIT = (By.XPATH, "//button[contains(., 'Upload Firmware')]")
     DEVICE_TYPE_TO_USE = (By.XPATH, "//mat-option[normalize-space()='BCU']")
 
@@ -52,76 +50,70 @@ class DevicePage(BasePage):
         super().__init__(driver)
         self.url = "/settings/devices"
 
-    # ------------------------------------------------------------------
-    # Navigation
-    # ------------------------------------------------------------------
     def navigate(self):
         """Go to devices page."""
         self.open(self.url)
         self.assert_element_displayed(self.DEVICE_TABLE)
-        logger.info("Navigated to Devices page")
 
-    # ------------------------------------------------------------------
-    # Dropdown helper for Material selects
-    # ------------------------------------------------------------------
-    def select_dropdown_option(self, trigger_locator, option_text):
+    def add_device(self, device_id, ip, location="" ):
         """
-        Clicks a Material dropdown trigger and selects an option by visible text.
-        Waits for the option to be clickable.
+        Add a new device with required fields.
+        Steps from test plan: click Add Device, fill ID, IP, location, save.
         """
-        self.click(trigger_locator)
-        option_xpath = f"//mat-option[contains(., '{option_text}')]"
-        option_locator = (By.XPATH, option_xpath)
-        self.wait_for_element(option_locator).click()
-        logger.debug(f"Selected '{option_text}' from dropdown")
-
-    # ------------------------------------------------------------------
-    # Device CRUD operations
-    # ------------------------------------------------------------------
-    def add_device(self, device_id, ip, network, network_interface, device_type, manager,
-                   parent_device=None, location=""):
-        """
-        Add a new device with all mandatory fields.
-        """
-        logger.info(f"Adding device: {device_id}")
         self.click(self.ADD_DEVICE_BUTTON)
-
-        # Text fields
         self.type(self.DEVICE_ID, device_id)
+        self.type(self.LOCATION, location)
+        self.click(self.NETWORK_SELECT)
+        self.click(self.NETWORK_TYPE_OPTION)
+        self.click(self.NETWORK_INTERFACE_SELECT)
+        self.click(self.NETWORK_INTERFACE_OPTION)
+        self.click(self.DEVICE_TYPE_SELECT)
+        self.click(self.DEVICE_TYPE_OPTION)
         self.type(self.DEVICE_IP, ip)
-        if location:
-            self.type(self.LOCATION, location)
-
-        # Dropdowns
-        self.select_dropdown_option(self.NETWORK_SELECT, network)
-        self.select_dropdown_option(self.NETWORK_INTERFACE_SELECT, network_interface)
-        self.select_dropdown_option(self.DEVICE_TYPE_SELECT, device_type)
-        self.select_dropdown_option(self.MANAGER_SELECT, manager)
-        if parent_device:
-            self.select_dropdown_option(self.PARENT_DEVICE_SELECT, parent_device)
-
         self.click(self.SAVE_BUTTON)
-
-        # Wait for the device to appear (optional: wait for success toast)
-        self.search_device(device_id)
+        
+        # Verify device appears
         self.assert_device_in_list(device_id)
-        logger.info(f"Device '{device_id}' added successfully")
 
     def search_device(self, keyword):
-        """Search for a device by ID, IP, or location."""
-        self.clear_and_type(self.SEARCH_BAR, keyword)
-        # Wait for search results to update (could wait for table rows)
-        self.wait.until(lambda d: len(self.get_device_rows()) > 0 or True)
-        logger.debug(f"Searched for '{keyword}'")
+        """Search for a device by ID, location, or IP."""
+        self.click(self.SEARCH_BAR)  # Ensure search bar is focused
+        self.type(self.SEARCH_BAR, keyword)
 
-    def delete_first_device(self):
-        """Delete the first device in the list."""
-        self.click(self.DELETE_ICON)
+    def delete_device(self, device_id):
+        # 1. Locate the delete icon for the specific device
+        delete_icon_xpath = f"//tr[.//td[contains(@class,'cdk-column-id')]/a[text()='{device_id}']]//span[@mattooltip='Delete this Device']"
+        delete_locator = (By.XPATH, delete_icon_xpath)
+
+        # 2. Wait for the delete icon to be clickable (max 10 sec)
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable(delete_locator)
+            )
+        except TimeoutException:
+            raise Exception(f"Delete icon for device {device_id} not found or not clickable")
+
+        # 3. Click the delete icon
+        self.click(delete_locator)
+
+        # 4. Wait for the confirmation dialog and click the Yes button
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located(self.CONFIRM_DELETE)
+            )
+        except TimeoutException:
+            raise Exception("Confirmation dialog did not appear after clicking delete")
+
         self.click(self.CONFIRM_DELETE)
-        logger.info("Deleted first device")
+
+        # 5. Optional: Wait for the device row to disappear
+        row_locator = (By.XPATH, f"//tr[.//td[contains(@class,'cdk-column-id')]/a[text()='{device_id}']]")
+        WebDriverWait(self.driver, 5).until(
+            EC.invisibility_of_element_located(row_locator)
+        )
 
     def get_device_rows(self):
-        """Return all rows in the device table body."""
+        """Return all rows in the device table."""
         return self.find_elements((By.CSS_SELECTOR, "tbody tr"))
 
     def assert_device_in_list(self, device_id):
@@ -138,19 +130,30 @@ class DevicePage(BasePage):
         assert not found, f"Device '{device_id}' should not be in list but was found"
         logger.info(f"Device '{device_id}' correctly absent")
 
-    # ------------------------------------------------------------------
-    # Firmware upload (section 21)
-    # ------------------------------------------------------------------
-    def upload_firmware(self, file_path, device_type):
-        """
-        Upload a firmware file for a specific device type.
-        Steps: click upload, select file, choose type, upload.
-        """
-        logger.info("Uploading firmware for device")
+    def upload_firmware(self, file_path, device_type="BCU"):
+
+        # Step 1: Open the upload form
         self.click(self.FIRMWARE_UPLOAD_BUTTON)
-        self.type(self.FIRMWARE_FILE_INPUT, Config.FIRMWARE_FILE_PATH)
-        self.select_dropdown_option(self.DEVICE_TYPE_SELECT_FW, device_type)
-        self.click(self.DEVICE_TYPE_TO_USE)
+
+        # Step 2: Find the file input element (type="file") and send the path
+        # The file input might be hidden, but it's present in the DOM.
+        # Adjust the locator to match your page – common selectors:
+        file_input_locator = (By.CSS_SELECTOR, "input[type='file']")
+        # Wait for the file input to be present and interactable
+        file_input = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(file_input_locator)
+        )
+        file_input.send_keys(file_path)   # Send the absolute path to the file
+        time.sleep(1)  # Small wait to ensure file is processed by the UI
+        # Step 3: Select device type (if needed after file selection)
+        self.click(self.DEVICE_TYPE_SELECT)
+        time.sleep(1)  # Small wait to ensure dropdown options are loaded
+        self.click(self.DEVICE_TYPE_TO_USE)  # Click the option matching device_type
+
+        time.sleep(1)  # Small wait to ensure UI updates before submitting
+
+        # Step 4: Submit the upload
         self.click(self.UPLOAD_SUBMIT)
+        time.sleep(1)  # Wait for upload to process (adjust as needed)
         # Optionally wait for success message
-        logger.info("Firmware upload initiated")
+        logger.info(f"Firmware upload initiated for {device_type} from {os.path.basename(file_path)}")

@@ -28,11 +28,11 @@ class DashboardPage(BasePage):
         super().__init__(driver)
         self.url = "/dashboard"
 
-    # ... rest of your methods ...
+   # ------- Actions ----------
 
     def enter_password(self, password):
         """Enter password when prompted during blast."""
-        self.type(self.USER_PASSWORD_INPUT, password)   # fixed
+        self.type(self.USER_PASSWORD_INPUT, password)
 
     def set_channel_offset(self, seconds_list):
         """Set multiple channel offsets."""
@@ -43,4 +43,4 @@ class DashboardPage(BasePage):
         for i, value in enumerate(seconds_list):
             inputs[i].clear()
             inputs[i].send_keys(str(value))
-        self.click(self.CHANNEL_OFFSET_SAVE_BUTTON)   # fixed
+        self.click(self.CHANNEL_OFFSET_SAVE_BUTTON)
