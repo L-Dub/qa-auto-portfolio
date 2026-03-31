@@ -35,8 +35,9 @@ class GroupPage(BasePage):
     def add_group(self, name, description=""):
         self.click(self.ADD_GROUP_BUTTON)
         self.type(self.GROUP_NAME, name)
-        if description:
+        '''if description:
             self.type(self.DESCRIPTION, description)
+        '''
         self.click(self.SAVE_BUTTON)
         self.search_group(name)
         self.assert_group_in_list(name)

@@ -50,7 +50,7 @@ class LoginPage(BasePage):
     def logout(self):
         logger.info("Logging out")
         self.click(self.USER_MENU)          # open user menu
-        self.click(self.LOGOUT_BUTTON)     # click logout
+        self.click(self.LOGOUT_BUTTON)      # click logout
 
     def open_settings(self):
         self.click(self.SETTINGS_BUTTON)

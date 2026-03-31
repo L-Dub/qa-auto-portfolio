@@ -16,6 +16,7 @@ jobs:
         python-version: ['3.10', '3.11']
     env:
       MOCK_HARDWARE: false  # Set to true to mock hardware interactions during tests
+      
       HEADLESS: true
       BASE_URL: ${{ secrets.BASE_URL}}  # This will be overridden if you have a staging URL
 
