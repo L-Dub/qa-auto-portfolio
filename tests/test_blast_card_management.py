@@ -60,3 +60,6 @@ class TestBlastCardsManagement:
         self.blast_card_page.delete_card_using_btn()
         logger.info("✓ Blast Card deleted successfully")
         
+
+        
+        

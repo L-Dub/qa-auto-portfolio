@@ -14,9 +14,9 @@ def pytest_addoption(parser):
 def driver(request):
     browser = request.config.getoption("--browser")
     headless = request.config.getoption("--headless")
-    
     if browser == "chrome":
         options = Options()
+        options.add_argument("--log-level=3")   # 0=All, 1=Info, 2=Warnings, 3=Errors only
         if headless:
             options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -46,6 +46,10 @@ def admin_credentials():
 @pytest.fixture
 def cbo_credentials():
     return {"username": Config.CBO_USERNAME, "password": Config.CBO_PASSWORD}
+
+@pytest.fixture
+def eng_credentials():
+    return {"username": Config.ENG_USERNAME, "password": Config.ENG_PASSWORD}
 
 # Hook for screenshot on failure
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
