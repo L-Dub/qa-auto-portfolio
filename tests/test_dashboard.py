@@ -31,6 +31,7 @@ class TestDashboard:
         sleep(30) #Wait for the user to clear the error.
         dashboard.system_alerts_error_removed()
         #dashboard.system_alerts(expect_present=False)  # Verify error is cleared after viewing logs
+        
 '''
     def test_device_selection(self, driver):
         dashboard = DashboardPage(driver)

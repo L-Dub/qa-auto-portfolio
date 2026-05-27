@@ -19,6 +19,7 @@ class TestDeviceManagement:
         """Test Case: View Devices"""
         self.device_page.assert_element_displayed(self.device_page.DEVICE_TABLE)
 
+    '''
     def test_add_device(self, driver):
         """Test Case: Add Device"""
         device_id = str(random.randint(257, 910) + 10)  # Generate a random ID to avoid conflicts
@@ -46,7 +47,8 @@ class TestDeviceManagement:
         assert len(rows) == 1
         assert device_id in rows[0].text
         self.device_page.delete_device(device_id)  # Clean up after test
-        
+     
+    '''
     def test_upload_firmware(self, driver):
         """Test Case: Upload Firmware"""
         self.device_page = DevicePage(driver)

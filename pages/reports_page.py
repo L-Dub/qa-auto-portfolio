@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class ReportsPage(BasePage):
@@ -50,5 +51,5 @@ class ReportsPage(BasePage):
 
     def generate_event_report(self):
         self.click(self.GENERATE_EVENT_REPORT)
-        wait = webdriver.WebDriverWait(self.driver, 30)
+        wait = WebDriverWait(self.driver, 30)
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.mat-mdc-table")))
