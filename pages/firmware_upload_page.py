@@ -65,3 +65,4 @@ class DevicePage(BasePage):
         
         #Wait for success message
         logger.info(f"Firmware upload initiated for {device_type} from {os.path.basename(file_path)}")
+        

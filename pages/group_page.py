@@ -57,11 +57,11 @@ class GroupPage(BasePage):
         WebDriverWait(self.driver, 30).until(
             EC.element_to_be_clickable(self.DELETE_ICON)
         ).click()
-        
+    
         WebDriverWait(self.driver, 30).until(
             EC.element_to_be_clickable(self.CONFIRM_DELETE)
         ).click()
-
+    
         """Method for searching for a group using the search bar"""
     def search_group(self, keyword):
         WebDriverWait(self.driver, 10).until(

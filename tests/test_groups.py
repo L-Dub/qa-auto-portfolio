@@ -24,6 +24,7 @@ class TestGroups:
         self.group_page.add_group(name)
         self.group_page.search_group(name)
         self.group_page.delete_using_icon()
+        self.group_page.assert_group_not_in_list(name)  # Verify deletion
 
     def test_delete_group_using_icon(self, driver):
         #Test Case: Delete Group using Icon
@@ -31,6 +32,7 @@ class TestGroups:
         self.group_page.add_group(name)
         self.group_page.search_group(name)
         self.group_page.delete_using_icon()
+        self.group_page.assert_group_not_in_list(name)  # Verify deletion
 
 """
     def test_delete_multiple_groups(self, driver):

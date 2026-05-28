@@ -145,7 +145,7 @@ class DevicePage(BasePage):
         )
         file_input.send_keys(file_path)   # Send the absolute path to the file
 
-        # Step 3: Select device type (if needed after file selection)
+        # Step 3: Select device type after file selection
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(self.DEVICE_TYPE_SELECT)
         ).click()
