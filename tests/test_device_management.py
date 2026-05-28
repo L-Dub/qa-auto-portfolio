@@ -49,8 +49,4 @@ class TestDeviceManagement:
         self.device_page.delete_device(device_id)  # Clean up after test
      
     '''
-    def test_upload_firmware(self, driver):
-        """Test Case: Upload Firmware"""
-        self.device_page = DevicePage(driver)
-        self.device_page.upload_firmware(file_path = Config.FIRMWARE_FILE_PATH)
-        
+    

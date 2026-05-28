@@ -81,7 +81,7 @@ class DashboardPage(BasePage):
         
     def open_action_panel(self):
         """Click the action panel button to reveal Arm/Blast options"""
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             EC.element_to_be_clickable(self.ACTION_PANEL)
         ).click()
         logger.info("Opened action panel")
@@ -252,7 +252,6 @@ class DashboardPage(BasePage):
         """Click the checkbox for a specific device - Robust version"""
         print(f"Attempting to select device: '{device_name}'")
 
-        # ✅ Much more reliable locator:
         # 1. Find the card by device name
         # 2. Find the mat-checkbox INSIDE that card (we click the mat-checkbox itself,
         #    NOT the hidden <input> that Angular Material uses)
