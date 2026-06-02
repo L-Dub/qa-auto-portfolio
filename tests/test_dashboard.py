@@ -37,7 +37,7 @@ class TestDashboard:
         dashboard = DashboardPage(driver)
         dashboard.navigate()
         self.device_page = DevicePage(driver)
-        device_id = "404"  #Fix ID for consistent testing; can be randomized if needed
+        device_id = "911"  #Fix ID for consistent testing; can be randomized if needed
         ip = "172.20.10.48"
         device_name = "CommsTest"
         self.device_page.navigate()
@@ -49,7 +49,7 @@ class TestDashboard:
         dashboard = DashboardPage(driver)
         dashboard.navigate()
         self.device_page = DevicePage(driver)
-        device_id = "404"  #Fix ID for consistent testing; can be randomized if needed
+        device_id = "911"  #Fix ID for consistent testing; can be randomized if needed
         ip = "172.20.10.48"
         device_name = "CommsTest"
         self.device_page.navigate()
@@ -60,7 +60,7 @@ class TestDashboard:
 
     def test_alerts_display(self, driver):
         self.device_page = DevicePage(driver)
-        device_id = "404"  #Fix ID for consistent testing; can be randomized if needed
+        device_id = "911"  #Fix ID for consistent testing; can be randomized if needed
         ip = "172.20.10.48"
         device_name = "CommsTest"
         self.device_page.navigate()

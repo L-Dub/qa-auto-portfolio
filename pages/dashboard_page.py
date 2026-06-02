@@ -9,7 +9,7 @@ from config import Config
 import time
 
 class DashboardPage(BasePage):
-    # Locators (as tuples)
+    # ---------------------------------------------- Locators ----------------------------------------------
     DEVICE_CHECKBOX = (By.XPATH, "//span[@class='locationLabel' and text()='Chromium mine']/ancestor::bcu-card-high-detail//input[@type='checkbox']")
     DEVICE_STATUS = (By.XPATH, "//span[@class='locationLabel' and text()='{}']/ancestor::bcu-title//span[text()='State:']/following-sibling::span//span[@class='titleValue']")
     ALERT_ICON = (By.XPATH, "//span[@class='material-icons' and text()='notifications']")
@@ -42,7 +42,7 @@ class DashboardPage(BasePage):
     ERROR_TYPE = (By.XPATH, "//td//p[contains(text(), 'High Leakage')]") # This is an example locator for a specific error type in the dropdown; you can make it more generic if needed.
     
     
-    #========================== SYSTEM ===========================================================
+    #====================================== SYSTEM Alerts===========================================================
     SYSTEM_ALERT_ERRORS = [ "Short Circuit","High Leakage", "High Current", "Acknowledgement Alert",
                            "Low Battery", "Device not available", "Last detonator bad","Last detonator bad voltage",
                             "Blast voltage bad", "Harness Break", "Programming Error","Test Mode","TX error preventing blast"
@@ -59,7 +59,7 @@ class DashboardPage(BasePage):
         self.open(self.url)
         self.assert_element_displayed(self.DEVICE_CARDS)
 
-   # ------- Actions ----------
+   # ----------------------------------Actions -------------------------------------------------
    
     def open_alerts_dropdown(self):
         """Click on the Alerts dropdown to view system alerts."""
@@ -85,7 +85,6 @@ class DashboardPage(BasePage):
             EC.element_to_be_clickable(self.ACTION_PANEL)
         ).click()
         logger.info("Opened action panel")
-
 
     def assert_alert_is_present(self, expected_error: str, timeout: int = 15):
         """Assert that a specific error appears in the Alerts dropdown"""
@@ -159,7 +158,6 @@ class DashboardPage(BasePage):
     """Perform blast action and verify the flow."""
     def performing_blast(self):
         # Before running these test make sure the device has dets connected and ready for locking.
-        
         # User has to lock and scan the centralized key before performing blast, so we wait for the key to be visible and the device to be ready to arm
         WebDriverWait(self.driver, 180).until(
             EC.visibility_of_element_located(self.CENTRALIZED)

@@ -9,6 +9,7 @@ class TestLogin:
         (Config.ADMIN_USERNAME, Config.ADMIN_PASSWORD, "dashboard"),
         ("invalid", "invalid", "Unauthorized - Token invalid , user unauthorized!")
     ])
+    
     def test_login_scenarios(self, driver, base_url, username, password, expected):
         login_page = LoginPage(driver)
         login_page.navigate()

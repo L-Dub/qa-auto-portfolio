@@ -1,4 +1,3 @@
-from pytest import Config
 from selenium.webdriver.common.by import By
 import time
 from pages.base_page import BasePage
@@ -8,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import os
+
 
 class FirmwareUploadPage(BasePage):
     """
@@ -28,9 +28,10 @@ class FirmwareUploadPage(BasePage):
     UPGRADE_SELECTED_DEVICES = (By.XPATH, "//i[contains(@class, 'icon-upgrade')]/ancestor::button")
     DEVICE_IS_UPGRADING = (By.XPATH, "//mat-progress-spinner")
     BOOTLOADER_ICON = (By.XPATH, "//i[contains(@class, 'icon-upgrade') and contains(@class, 'positive')]")
-    BOOTLOAD_SELECTED_DEVICES = (By.XPATH, "//button[@mattooltip='Bootload Selected Devices']")
-    NEW_DEVICE_VERSION = (By.XPATH, "//span[@class='configurationValue' and text()='51316']")   #Replace the text with the expected version number after upgrade to verify the new version is displayed on the card.
+    BOOTLOAD_SELECTED_DEVICES = (By.XPATH, "//button[contains(@class, 'mat-mdc-fab') and .//i[text()='update'] and @aria-describedby]")
+    NEW_DEVICE_VERSION = (By.XPATH, "//span[@class='configurationValue' and normalize-space()='51316']")   #Replace the text with the expected version number after upgrade to verify the new version is displayed on the card.
 
+    #------------Setup and navigation methods----------------
     def __init__(self, driver):
         super().__init__(driver)
         self.url = "/settings/devices"
@@ -41,20 +42,15 @@ class FirmwareUploadPage(BasePage):
 
     def device_update(self, file_path, device_type="BCU"):
 
-        # Step 1: Open the upload form
-        self.click(self.FIRMWARE_UPLOAD_BUTTON)
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.FIRMWARE_UPLOAD_BUTTON)
+        ).click()
 
-        # Step 2: Find the file input element (type="file") and send the path
-        # The file input might be hidden, but it's present in the DOM.
-        # Adjust the locator to match your page – common selectors:
-        file_input_locator = (By.CSS_SELECTOR, "input[type='file']")
-        # Wait for the file input to be present and interactable
-        file_input = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(file_input_locator)
-        )
-        file_input.send_keys(file_path)   # Send the absolute path to the file
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']"))
+        ).send_keys(file_path)
 
-        # Step 3: Select device type after file selection
+        # Select device type after file selection (order matters)
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(self.DEVICE_TYPE_SELECT)
         ).click()
@@ -106,16 +102,18 @@ class FirmwareUploadPage(BasePage):
             raise
         
     def upgrade_selected_devices(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             EC.element_to_be_clickable(self.UPGRADE_SELECTED_DEVICES)
         ).click()
         
     def bootload_device(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             EC.element_to_be_clickable(self.BOOTLOAD_SELECTED_DEVICES)
         ).click()
         
+    # ---------------------------- Assertions specific to firmware upload/upgrade process ----------------------------------------
     def assert_upgrade_successful(self):
+        # Upgrade may take up to 20 minutes when connection is via Ethernet(Might take an hour via Wi-Fi) – wait for bootloader icon.
         try:
             WebDriverWait(self.driver, 1200).until(
                 EC.presence_of_element_located(self.BOOTLOADER_ICON)
@@ -124,9 +122,11 @@ class FirmwareUploadPage(BasePage):
             assert False, f"Upgrade NOT successful - Bootloader icon not found after upgrade completion"
         
     def assert_device_is_upgrading(self):
+        # The device card shows a progress spinner during firmware installation.
         assert self.driver.find_elements(*self.DEVICE_IS_UPGRADING), "Device is NOT upgrading - Progress spinner not found"
         
     def assert_bootloading_is_successful(self):
+        # After bootload, the new firmware version must appear within 10 minutes.
         try:
             WebDriverWait(self.driver, 600).until(
                 EC.presence_of_element_located(self.NEW_DEVICE_VERSION)
