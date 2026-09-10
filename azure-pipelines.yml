@@ -29,14 +29,15 @@ steps:
 - script: pytest tests --browser=chrome --headless=true
   displayName: pytest
   env:
-    BROWSER: chrome
-    HEADLESS: "true"
-    MOCK_HARDWARE: "true"
-    CI: "true"
-    BASE_URL: $(BASE_URL)
     ADMIN_USERNAME: $(ADMIN_USERNAME)
     ADMIN_PASSWORD: $(ADMIN_PASSWORD)
     CBO_USERNAME: $(CBO_USERNAME)
     CBO_PASSWORD: $(CBO_PASSWORD)
     ENGINEER_USERNAME: $(ENGINEER_USERNAME)
     ENGINEER_PASSWORD: $(ENGINEER_PASSWORD)
+    BASE_URL: $(BASE_URL)
+    API_BASE_URL: $(API_BASE_URL)
+    BROWSER: $(BROWSER)
+    HEADLESS: $(HEADLESS)
+    MOCK_HARDWARE: $(MOCK_HARDWARE)
+    FIRMWARE_FILE_PATH: $(FIRMWARE_FILE_PATH)
