@@ -40,6 +40,16 @@ class Config:
     # Paths
     SCREENSHOT_DIR = "reports/screenshots"
     LOG_DIR = "logs"
+    if browser == "chrome":
+        options = Options()
+        options.add_argument("--log-level=3")
+        if headless:
+            options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        driver = webdriver.Chrome(options=options)
 
     # Hardware mock flag
     MOCK_HARDWARE = os.getenv("MOCK_HARDWARE", "false").lower() == "true"
