@@ -26,18 +26,17 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
-
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest tests --browser=chrome --headless=true
+- script: pytest tests --browser=chrome --headless=true
   displayName: pytest
   env:
     BROWSER: chrome
     HEADLESS: "true"
     MOCK_HARDWARE: "true"
     CI: "true"
-    BASE_URL: http://localhost:8080
+    BASE_URL: $(BASE_URL)
+    ADMIN_USERNAME: $(ADMIN_USERNAME)
+    ADMIN_PASSWORD: $(ADMIN_PASSWORD)
+    CBO_USERNAME: $(CBO_USERNAME)
+    CBO_PASSWORD: $(CBO_PASSWORD)
+    ENGINEER_USERNAME: $(ENGINEER_USERNAME)
+    ENGINEER_PASSWORD: $(ENGINEER_PASSWORD)
