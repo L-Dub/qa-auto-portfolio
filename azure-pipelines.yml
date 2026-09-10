@@ -33,5 +33,11 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+    pytest tests --browser=chrome --headless=true
+  displayName: pytest
+  env:
+    BROWSER: chrome
+    HEADLESS: "true"
+    MOCK_HARDWARE: "true"
+    CI: "true"
+    BASE_URL: http://localhost:8080
